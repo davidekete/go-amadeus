@@ -1,0 +1,124 @@
+# HTTP Requests in Go
+
+This project demonstrates how to make HTTP requests in Go, including `GET`, `POST`, and `DELETE` requests, while handling authentication using OAuth2. It interacts with the Amadeus API to fetch flight destinations, cancel orders, and delete flight orders.
+
+## Project Structure
+
+```
+http-requests/
+├── client.go         # Contains HTTP client logic for GET, POST, and DELETE requests
+├── models.go         # Defines data models for API responses
+├── main.go           # Entry point of the application
+├── .env.example      # Example environment file for API credentials
+├── .gitignore        # Ignores sensitive files like .env
+├── go.mod            # Go module file with dependencies
+```
+
+## Prerequisites
+
+- Go 1.19 or later
+- An Amadeus API account with valid `API_KEY` and `API_SECRET`
+- .env file with the following variables:
+  ```
+  API_KEY=<your_api_key>
+  API_SECRET=<your_api_secret>
+  ```
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/http-requests.git
+   cd http-requests
+   ```
+
+2. Copy the .env.example file to .env and fill in your API credentials:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Install dependencies:
+   ```bash
+   go mod tidy
+   ```
+
+## Usage
+
+1. Run the application:
+   ```bash
+   go run main.go
+   ```
+
+2. The program will fetch flight destinations from the Amadeus API and print the response in a formatted JSON structure.
+
+## Code Overview
+
+### main.go
+
+The entry point of the application:
+- Loads environment variables using `godotenv`.
+- Calls the `GetRequest` function to fetch flight destinations.
+- Prints the response in a human-readable JSON format.
+
+### client.go
+
+Contains the core HTTP client logic:
+- **`getAccessToken`**: Fetches an OAuth2 access token.
+- **`GetRequest`**: Sends a `GET` request to retrieve flight destinations.
+- **`PostRequest`**: Sends a `POST` request to cancel a transfer order.
+- **`DeleteRequest`**: Sends a `DELETE` request to delete a flight order.
+
+### models.go
+
+Defines the data models for API responses:
+- `AccessTokenResponse`: Represents the OAuth2 token response.
+- `FlightResponse`: Represents the response for flight destinations.
+- `CancellationResponse`: Represents the response for order cancellations.
+
+### .env.example
+
+Provides a template for environment variables:
+- `API_KEY`: Your Amadeus API key.
+- `API_SECRET`: Your Amadeus API secret.
+
+### .gitignore
+
+Ensures sensitive files like .env are not committed to version control.
+
+## Example Output
+
+When running the application, you should see a JSON response similar to the following:
+
+```json
+{
+  "data": [
+    {
+      "type": "flight-destination",
+      "origin": "PAR",
+      "destination": "NYC",
+      "departureDate": "2025-06-01",
+      "returnDate": "2025-06-15",
+      "price": {
+        "total": "300.00"
+      }
+    }
+  ]
+}
+```
+
+## Error Handling
+
+- If the .env file is missing or invalid, the program will terminate with an error.
+- Non-2xx HTTP responses are handled gracefully with descriptive error messages.
+
+## Dependencies
+
+- [joho/godotenv](https://github.com/joho/godotenv): Loads environment variables from a .env file.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
