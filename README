@@ -28,7 +28,7 @@ http-requests/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/http-requests.git
+   git clone https://github.com/davidekete/go-amadeus.git
    cd http-requests
    ```
 
