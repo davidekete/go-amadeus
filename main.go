@@ -9,23 +9,20 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	response, err := GetRequest("PAR", "300")
+	origins := []string{"PAR", "ORY", "MAD"}
+	results := FetchDestinationsAsync(origins, "300")
 
-	if err != nil {
-		panic(err)
+	for msg := range results {
+		switch v := msg.(type) {
+		case *FlightResponse:
+			pretty, _ := json.MarshalIndent(v, "", "  ")
+			fmt.Println(string(pretty))
+		case error:
+			log.Printf("Request failed: %v\n", v)
+		}
 	}
-
-	b, err := json.MarshalIndent(response, "", "  ")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(b))
 }

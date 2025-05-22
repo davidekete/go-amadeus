@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -223,4 +224,34 @@ func DeleteRequest(flightOrderID string) {
 	// Print the HTTP status and response body to the console.
 	fmt.Printf("Status: %s\n", resp.Status)
 	fmt.Printf("Response Body: %s\n", body)
+}
+
+// FetchDestinationsAsync concurrently queries /shopping/flight-destinations
+// for each origin in the slice and streams results back on the returned channel.
+// Any error will be sent on the same channel as a value of type error.
+func FetchDestinationsAsync(origins []string, maxPrice string) <-chan interface{} {
+	out := make(chan interface{})
+	var wg sync.WaitGroup
+	wg.Add(len(origins))
+
+	for _, o := range origins {
+		origin := o // capture range variable
+		go func() {
+			defer wg.Done()
+			resp, err := GetRequest(origin, maxPrice)
+			if err != nil {
+				out <- err
+				return
+			}
+			out <- resp
+		}()
+	}
+
+	// Close the channel once all goroutines have finished.
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	return out
 }
